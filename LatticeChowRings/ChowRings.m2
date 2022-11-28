@@ -66,7 +66,15 @@ augmentedBuildingSet Matroid := List => M -> (
 --NESTED SETS
 -----------------------------------------------------------------
 
-nestedSetComplex = method(Options => {CheckWellDefined => false, Variable => "x"})
+nestedSetComplex = method(Options => {
+	CheckWellDefined => false, 
+	CoefficientRing => QQ,
+	Presentation => "standard",
+	RingOptions => new OptionTable from {MonomialOrder => GLex},
+	Variable => "x",
+	VariableOrder => null
+	}
+    )
 
 nestedSetComplex (Poset, List) := SimplicialComplex => o -> (L, G) -> (
     if o.CheckWellDefined and not isBuildingSet(L, G) then (
@@ -79,7 +87,7 @@ nestedSetComplex (Poset, List) := SimplicialComplex => o -> (L, G) -> (
 	    error "isBuildingSet: Expected the second argument to be a list of elements in the lattice."
 	    );
 	);
-    NG := unique apply(maximalChains L, c -> if #c == 0 then {} else sort toList sum apply(c, v -> set factors(L, G, v) ) );
+    NG := unique apply(maximalChains L, c -> if #c == 0 then {} else toList sum apply(c, v -> set factors(L, G, v) ) );
     x := getSymbol o.Variable;
     S := QQ[apply(G, v -> x_v)];
     x = hashTable apply(S_*, v -> last baseName v => v);
