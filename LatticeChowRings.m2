@@ -68,7 +68,7 @@ export {
     "RingOptions",    	      	  -- option for idealGradedMoebiusAlgebra, ?? 
     "VariableOrder",	    	  -- option for idealChowRingFY, ??
 
---GradedMoebius.m2
+--GradedMoebius.m2"
     "idealGradedMoebiusAlgebra",  -- documented ++
     "isCChordal",	     	  -- documented ++
     "isSimpleVertex",	     	  -- ** documented ++

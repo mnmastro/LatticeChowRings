@@ -152,13 +152,13 @@ idealAugmentedChowRing Matroid := Ideal => o -> M -> (
     else (
 	L := latticeOfFlats M;
     	A := atoms L;
-    	L = if o.Presentation == "AtomFree" then subposet(L, select(L_*, F -> rank(M, F) > 0) )
+    	L = if o.Presentation == "atom-free" then subposet(L, select(L_*, F -> rank(M, F) > 0) )
             else subposet(L, select(L_*, F -> rank(M, F) < rank M) );
     	y := getSymbol o.AugmentedVariable;
     	x := getSymbol o.Variable;
 	kk := o.CoefficientRing;
     	if not isField kk then (
-	    error "idealChowRingSMP: Expected the coefficient ring for the Chow ring
+	    error "idealAugmentedChowRing: Expected the coefficient ring for the Chow ring
 	    to be a field."
 	    );
     	ringOpts := new OptionTable from if o.RingOptions === null then {} else o.RingOptions;
@@ -167,20 +167,20 @@ idealAugmentedChowRing Matroid := Ideal => o -> M -> (
 		   if set L_* =!= set o.VariableOrder 
 		   then (
 		       if o.Presentation == "atom-free" then (
-			   error "idealChowRingSMP: Expected VariableOrder to be a permutation 
+			   error "idealAugmentedChowRing: Expected VariableOrder to be a permutation 
 		       	   of the list of flats of rank at least 1 in the matroid."
 			   )
 		       else (
-			   error "idealChowRingSMP: Expected VariableOrder to be a permutation 
+			   error "idealAugmentedChowRing: Expected VariableOrder to be a permutation 
 		       	   of the list of proper flats in the matroid."
 			   )
 		       )
 	       	   else o.VariableOrder
 		   );
-    	S := if o.Presentation == "AtomFree" 
+    	S := if o.Presentation == "atom-free" 
 	     then kk[apply(varList, F -> x_F), ringOpts]
 	     else kk[apply(A, i -> y_i)|apply(varList, F -> x_F), ringOpts];
-    	if o.Presentation == "AtomFree" then (
+    	if o.Presentation == "atom-free" then (
 	    x = hashTable apply(S_*, v -> last baseName v => v)
 	    )
 	else (
@@ -191,12 +191,12 @@ idealAugmentedChowRing Matroid := Ideal => o -> M -> (
 	    p -> not compare(L, p#0, p#1) and not compare(L, p#1, p#0) );
     	I1 := ideal apply(incomp, F -> x#(F#0)*x#(F#1) );
     	I2 := ideal flatten apply(A, a -> apply(select(L_*, F -> not compare(L, a, F) ), 
-	    F -> if o.Presentation == "AtomFree" 
+	    F -> if o.Presentation == "atom-free" 
 	         then x#F*(sum apply(select(L_*, G -> compare(L, a, G) and compare(L, F, G) ), G -> x#G ) ) 
 	         else y#a*x#F) );
     	 beta := a -> sum apply(select(L_*, F -> not compare(L, a, F) ), F -> x#F );
     	 I3 := ideal apply(A, a -> 
-	     if o.Presentation == "AtomFree" 
+	     if o.Presentation == "atom-free" 
 	     then (l := sum apply(select(L_*, G -> compare(L, a, G)), G -> x#G ); l^2) 
 	     else y#a - beta a);
     	 I1 + I2 + I3
@@ -207,7 +207,7 @@ idealAugmentedChowRing Matroid := Ideal => o -> M -> (
 -- OUTPUT: The defining ideal of the augmented Chow ring of M.
 -- OPTION: Variable => Specifies the letter used for the variables in the ambient
 --                     polynomial ring.
---    	   Presentation => "AtomFree" => Obtained from Feichtner-Yuzvinsky presentation 
+--    	   Presentation => "atom-free" => Obtained from Feichtner-Yuzvinsky presentation 
 --                          after suitable change of variables and killing the variables
 --                          corresponding to atoms in the lattice of flats.
 --    	      	      	=> "FY" => The Feichtner-Yuzvinsky presentation for the lattice
