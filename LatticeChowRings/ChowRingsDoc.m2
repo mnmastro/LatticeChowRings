@@ -42,13 +42,13 @@ document {
 	
 	EXAMPLE {
 		"M = uniformMatroid(3, 4);",
-		"N = freeCoextension M;",
+		"N = coextension M;",
 		"L = latticeOfFlats N;",
 		"G = augmentedBuildingSet M",
 		"isBuildingSet(L, G)"
 		},
 	        
-	SeeAlso => {freeCoextension, isBuildingSet}
+	SeeAlso => {coextension, isBuildingSet}
 	    }
 
 document {

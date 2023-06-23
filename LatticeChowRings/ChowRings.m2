@@ -57,7 +57,7 @@ buildingSets Poset := List => L -> (
 augmentedBuildingSet = method()
 
 augmentedBuildingSet Matroid := List => M -> (
-    N := freeCoextension M;
+    N := coextension M;
     e := max toList N.groundSet;
     apply(toList M.groundSet, i -> {i})|(select(flats N, f -> f#?e)/toList/sort)
     )
@@ -147,7 +147,7 @@ idealAugmentedChowRing = method(
 
 idealAugmentedChowRing Matroid := Ideal => o -> M -> (
     if o.Presentation == "FY" then (
-	idealChowRingFY(latticeOfFlats freeCoextension M, augmentedBuildingSet M, o)
+	idealChowRingFY(latticeOfFlats coextension M, augmentedBuildingSet M, o)
 	)
     else (
 	L := latticeOfFlats M;
