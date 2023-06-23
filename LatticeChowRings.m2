@@ -69,12 +69,16 @@ export {
     "VariableOrder",	    	  -- option for idealChowRingFY, ??
 
 --GradedMoebius.m2"
+    "brokenCircuitComplex",    	  --
     "idealGradedMoebiusAlgebra",  -- documented ++
     "isCChordal",	     	  -- documented ++
     "isSimpleVertex",	     	  -- ** documented ++
     "isStrongElimOrder",    	  -- documented ++
     "isStronglyChordal",    	  -- ** documented ++
     "isStronglyTChordal",    	  -- documented ++
+    "isTChordal",     	      	  --
+    "lineArrangement",   	  --
+    "nbcBases",	       	       	  --
     "strongElimOrder",	      	  -- documented ++
     "sunGraph",	   	      	  -- documented ++
 

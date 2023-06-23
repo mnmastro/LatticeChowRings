@@ -1,4 +1,39 @@
 document {
+	Key => {brokenCircuitComplex, (brokenCircuitComplex, Matroid, List)},
+	
+	Headline => "the simplicial complex of nbc-sets of a matroid",
+	
+	Usage => "brokenCircuitComplex(M, E)",
+	
+	Inputs => {
+	    	"M" => Matroid,
+		"E" => List => {"a permuted list of elements of the ground set of the matroid,
+		    arranged from smallest to largest"}
+		},
+	
+	Outputs => {
+		SimplicialComplex => {"the simplicial complex of nbc-sets of the matroid with
+		    respect to the given order"}
+		},
+	
+	PARA {"This function is provided by the package ", TO LatticeChowRings,"."},
+	
+	PARA {"Given an ordering of the ground set of a matroid M, a broken circuit of M is a set of
+	    the form C - {min C}, where C is a circuit of M and min C denotes the smallest element of
+	    C in the given ordering.  A subset of the ground set of M is called an nbc-set if it contains
+	    no broken circuits.  The collection of all nbc-sets forms a pure simplicial subcomplex of the
+	    complex of independent sets of M.  This function computes that simplicial complex."},
+	
+	EXAMPLE {
+	    	"B = deleteVertex(sunGraph 3, 5)",
+		"M = matroid B",
+		"brokenCircuitComplex(M, toList(0..6))",
+		},
+	    
+	 SeeAlso => {nbcBases}
+	    }
+
+document {
 	Key => {idealGradedMoebiusAlgebra, 
 	    (idealGradedMoebiusAlgebra, Matroid),
 	    (idealGradedMoebiusAlgebra, Graph)
@@ -216,7 +251,8 @@ document {
 	
 	Inputs => {
 	    	"M" => Matroid,
-		"E" => List => {"a permuted list of elements of the ground set of the matroid"}
+		"E" => List => {"a permuted list of elements of the ground set of the matroid,
+		    arranged from smallest to largest"}
 		},
 	
 	Outputs => {
@@ -226,9 +262,9 @@ document {
 	PARA {"This function is provided by the package ", TO LatticeChowRings,"."},
 	
 	PARA {"A strong elimination order for a matroid M is an ordering of the elements of its ground set
-	    such that for each circuit C of size at least 4 in M and each i in C different from the largest
+	    such that for each circuit C of size at least 4 in M and each i in C different from the smallest
 	    element of C in the given ordering, there is a 3-circuit T such that T - C has size 1 and the
-	    largest element of T in the given ordering is contained in C.  If a matroid has a strong elimination
+	    smallest element of T in the given ordering is contained in C.  If a matroid has a strong elimination
 	    order, it is called strongly T-chordal.  This function checks whether a given ordering of the 
 	    ground set of a matroid is a strong elimination order."}, 
 	
@@ -240,6 +276,40 @@ document {
 		},
 	    
 	 SeeAlso => {isCChordal}
+	    }
+
+document {
+	Key => {nbcBases, (nbcBases, Matroid, List)},
+	
+	Headline => "the maximal nbc-sets of a matroid",
+	
+	Usage => "nbcBases(M, E)",
+	
+	Inputs => {
+	    	"M" => Matroid,
+		"E" => List => {"a permuted list of elements of the ground set of the matroid,
+		    arranged from smallest to largest"}
+		},
+	
+	Outputs => {
+		List => {"the inclusion-maximal nbc-sets of the matroid with
+		    respect to the given order"}
+		},
+	
+	PARA {"This function is provided by the package ", TO LatticeChowRings,"."},
+	
+	PARA {"Given an ordering of the ground set of a matroid M, a broken circuit of M is a set of
+	    the form C - {min C}, where C is a circuit of M and min C denotes the smallest element of
+	    C in the given ordering.  A subset of the ground set of M is called an nbc-set if it contains
+	    no broken circuits.  The inclusion-maximal nbc-sets are particular bases of M, called nbc-bases."},
+	
+	EXAMPLE {
+	    	"B = deleteVertex(sunGraph 3, 5)",
+		"M = matroid B",
+		"nbcBases(M, toList(0..6))",
+		},
+	    
+	 SeeAlso => {brokenCircuitComplex}
 	    }
 
 document {

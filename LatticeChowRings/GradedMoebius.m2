@@ -77,17 +77,18 @@ isStronglyTChordal (Matroid, List) := Boolean => o -> (M, E) -> (
     C := circuits M;
     T := select(C, c -> #c == 3);
     C = select(C, c -> #c >= 4);
-    maxE := s -> first select(E, e -> s#?e);
-    -- find the largest element in a set s
+    minE := s -> first select(E, e -> s#?e);
+    -- find the smallest element in a set s
     
-    C = hashTable apply(C, c -> c => select(T, t -> c#?(maxE t) and #(t - c) == 1 ) );
+    C = hashTable apply(C, c -> c => select(T, t -> c#?(minE t) and #(t - c) == 1 ) );
     -- match circuits c of size at least 4 with 3-circuits t that contain a chord of c
     -- and the largest element of t is in c
     
     chordless := select(keys C, c -> 
-	any(toList(c - {maxE c}), i -> all(C#c, t -> t#?i ) )
+	any(toList(c - {minE c}), i -> all(C#c, t -> t#?i ) )
 	);
-    -- checks for each circuit c whether c - {i} has a subordinate triangle for each i =!= maxE c
+    -- checks for each circuit c whether c - {i} has a nbc-compatible triangle for each 
+    -- i =!= minE c
     
     if #chordless > 0 then (
 	if o.Verbose then return chordless else return false
@@ -108,6 +109,96 @@ isCChordal Matroid := Boolean => M -> (
 	);
     C' = set unique apply(C', (c, d) -> c + d - c*d);
     #C4 == #(C'*(set C))
+    )
+
+-----------------------------------------------------------------
+
+isTChordal = method()
+
+isTChordal Matroid := Boolean => M -> (
+    C := circuits M;
+    C4 := select(C, c -> #c >= 4);
+    C3 := select(C, c -> #c >= 3);
+    all(C4, c -> any(C3, t -> #(t - c) == 1) )
+    )
+
+
+-----------------------------------------------------------------
+
+brokenCircuitComplex = method()
+
+brokenCircuitComplex (Matroid, List) := SimplicialComplex => (M, E) -> (
+    if set E =!= M.groundSet then (
+	error "brokenCircuitComplex: Expected the list to be a permutation of the
+	ground set of the matroid."
+	);
+    I := ideal M;    
+    S := ring I;
+    minE := s -> first select(E, e -> s#?e);
+    -- find the smallest element in a set s
+    
+    brokenCircuits := apply(circuits M, c -> c - {minE c});
+    BC := monomialIdeal apply(brokenCircuits/toList, bc -> product apply(bc, i -> S_i) );
+    simplicialComplex BC  
+    ) 
+
+brokenCircuitComplex Matroid := SimplicialComplex => M -> brokenCircuitComplex(M, toList M.groundSet)
+
+
+-----------------------------------------------------------------
+
+nbcBases = method()
+
+nbcBases (Matroid, List) := List => (M, E) -> (
+    nbc := facets brokenCircuitComplex(M, E);
+    n := #(M.groundSet);
+    apply(nbc, b -> (e := first exponents b; select(n, i -> e#i == 1) ) )
+    ) 
+
+
+nbcBases Matroid := List => M -> nbcBases(M, toList M.groundSet)
+
+
+-----------------------------------------------------------------
+
+rank (Poset, Thing) := (P, x) -> (
+    if not isRanked P then (
+	error "rank: Expected a ranked poset."
+	);
+    if not (set P_*)#?x then (
+	error "rank: Expected an element of the poset."
+	);
+    rk := rankFunction P;
+    rk#(position(P_*, v -> v === x))
+    )
+
+
+-----------------------------------------------------------------
+
+matroid Poset := Matroid => opts -> L -> (
+    if not isGeometric L then (
+	error "matroid: Expected a geometric lattice."
+	);
+    One := first maximalElements L;
+    r := rank(L, One);
+    matroid apply(select(subsets(atoms L, r), b -> posetJoin(L, b) === One ),
+	b -> flatten(b/toList) )
+    )
+
+
+-----------------------------------------------------------------
+
+lineArrangement = method()
+
+lineArrangement List := Poset => F -> (
+    points := F/set;
+    E := sum points;
+    incidence := hashTable apply(toList E, l ->  l => set select(points, p -> p#?l) );
+    if any(subsets(E, 2)/toList, l -> #((incidence#(l#0))*(incidence#(l#1))) > 1) then (
+	error "lineArrangement: Not the points of a line arrangement."
+	);
+    G := {set{}}|apply(toList E, i -> set {i})|points|{E};
+    poset(G, isSubset)    
     )
 
 
@@ -166,5 +257,32 @@ strongElimOrder Graph := List => G -> (
     SEO
     )
 
+posetJoin (Poset, List) := List => (P, B) -> (
+    if not isSubset(B, P_*) then (
+	error "posetJoin: Expected a list of elements of the ground set of the poset."
+	);
+    indexElement := a -> position(P.GroundSet, i -> i === a);
+    upperBounds := if #B == 0 then (
+	P_*/indexElement 
+	) else (
+	toList product apply(B, a -> set ( (principalFilter(P, a))/indexElement ) )
+	);
+    if upperBounds == {} then (
+	error "posetJoin: The elements do not share any upper bounds."
+	);
+    M := P.RelationMatrix;
+    heightUpperBounds := flatten apply(upperBounds, i -> sum entries M_{i});
+    if #(select(heightUpperBounds, i -> i == min heightUpperBounds)) > 1 then (
+	error "The join does not exist; the least upper bound is not unique."
+	)
+    else (
+	first P.GroundSet_(upperBounds_{position (heightUpperBounds, l -> l == min heightUpperBounds)})
+	)    
+    )
 
 
+/// EXAMPLE
+
+G = graph {{0,1},{0,2},{0,3},{1,2},{1,3},{2,3},{1,4},{2,4},{2,5},{3,5},{2,6},{3,6},{5,6}}
+
+///

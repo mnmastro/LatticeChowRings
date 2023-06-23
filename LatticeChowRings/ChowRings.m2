@@ -227,7 +227,7 @@ matroidChowRingFiltration = method(
 	Augmented => false,
 	AugmentedVariable => "y",
 	CoefficientRing => QQ,
-	Presentation => "AtomFree",
+	Presentation => "atom-free",
 	Variable => "x", 
 	VariableOrder => null,
 	Verbosity => 1
@@ -235,9 +235,12 @@ matroidChowRingFiltration = method(
     )
 
 matroidChowRingFiltration Matroid := HashTable => o -> M -> (
+    chowOpts := if o.Augmented
+         then new OptionTable from select(pairs o, p -> p#0 =!= Verbosity and p#0 =!= Augmented)
+	 else new OptionTable from select(pairs o, p -> (set {CoefficientRing, Presentation, Variable})#?(p#0) );
     I := if o.Augmented 
-         then idealAugmentedChowRing(M, o)
-	 else idealChowRing(M, o);
+         then idealAugmentedChowRing(M, chowOpts)
+	 else idealChowRing(M, chowOpts);
     S := ring I;
     R := S/I;
     x := hashTable apply(R_*, v -> last baseName v => v);
